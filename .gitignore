@@ -1,0 +1,32 @@
+# .gitignore for Load Balancer Demo
+
+# Node modules
+node_modules/
+Source/node_modules/
+package-lock.json
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+.docker/
+
+# Temporary files
+tmp/
+temp/
+*.bak
+*.backup

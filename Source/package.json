@@ -1,0 +1,26 @@
+{
+  "name": "load-balancer-demo",
+  "version": "1.0.0",
+  "description": "Demo Load Balancer with Nginx for AWAD Seminar",
+  "main": "server_app.js",
+  "scripts": {
+    "start": "node server_app.js",
+    "server1": "PORT=3001 SERVER_ID=1 SERVER_COLOR=blue node server_app.js",
+    "server2": "PORT=3002 SERVER_ID=2 SERVER_COLOR=green node server_app.js",
+    "server3": "PORT=3003 SERVER_ID=3 SERVER_COLOR=red node server_app.js",
+    "test": "node load_test.js"
+  },
+  "keywords": [
+    "load-balancer",
+    "nginx",
+    "demo"
+  ],
+  "author": "AWAD Student",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "axios": "^1.6.2"
+  }
+}

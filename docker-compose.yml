@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # Backend Server 1
+  server1:
+    build:
+      context: ./Source
+      dockerfile: Dockerfile
+    container_name: backend-server-1
+    environment:
+      - PORT=3001
+      - SERVER_ID=1
+      - SERVER_COLOR=blue
+    ports:
+      - "3001:3001"
+    networks:
+      - loadbalancer-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Backend Server 2
+  server2:
+    build:
+      context: ./Source
+      dockerfile: Dockerfile
+    container_name: backend-server-2
+    environment:
+      - PORT=3002
+      - SERVER_ID=2
+      - SERVER_COLOR=green
+    ports:
+      - "3002:3002"
+    networks:
+      - loadbalancer-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Backend Server 3
+  server3:
+    build:
+      context: ./Source
+      dockerfile: Dockerfile
+    container_name: backend-server-3
+    environment:
+      - PORT=3003
+      - SERVER_ID=3
+      - SERVER_COLOR=red
+    ports:
+      - "3003:3003"
+    networks:
+      - loadbalancer-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Nginx Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-load-balancer
+    ports:
+      - "80:80"
+    volumes:
+      # Mount nginx configuration (change this to test different algorithms)
+      - ./nginx/nginx-round-robin.conf:/etc/nginx/nginx.conf:ro
+      # Uncomment one of these to test different algorithms:
+      # - ./nginx/nginx-least-conn.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx/nginx-ip-hash.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx/nginx-weighted.conf:/etc/nginx/nginx.conf:ro
+      # - ./nginx/nginx-health-check.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - server1
+      - server2
+      - server3
+    networks:
+      - loadbalancer-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  loadbalancer-network:
+    driver: bridge

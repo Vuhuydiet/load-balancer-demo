@@ -2,8 +2,8 @@
 
 ## 🎯 Timeline (30-40 phút)
 
-- **Phần 1-3: Lý thuyết** (15-17 phút) - Slides
-- **Phần 4: Demo** (10-12 phút) - **PHẦN NÀY** ⭐
+- **Phần 1-3: Lý thuyết** (17-20 phút) - Slides
+- **Phần 4: Demo** (7-10 phút) - **PHẦN NÀY** ⭐
 - **Phần 5: Q&A** (3-5 phút)
 
 ## 📝 Setup Trước Demo (15 phút trước)
@@ -25,9 +25,9 @@ curl http://localhost/
 - [ ] Clear terminal history
 - [ ] Browser tabs: Slides + Architecture diagram
 
-## 🎬 Demo Script (10-12 phút)
+## 🎬 Demo Script (7-10 phút)
 
-### 1. Round Robin (2 phút)
+### 1. Round Robin (1.5 phút)
 
 **SAY:** "Bây giờ demo thực tế. Tôi có 3 backend servers và 1 Nginx load balancer."
 
@@ -43,68 +43,52 @@ docker-compose ps
 
 ---
 
-### 2. Least Connections (2 phút)
+### 2. Least Connections (1 phút)
 
-**SAY:** "Nếu requests có độ phức tạp khác nhau? Least Connections sẽ gửi tới server ít connections nhất."
+**SAY:** "Least Connections gửi tới server ít connections nhất. Phù hợp cho WebSocket, streaming."
 
 ```bash
-./switch-algorithm.sh least-conn
-./simple-test.sh 9
+./switch-algorithm.sh least-conn && ./simple-test.sh 6
 ```
-
-**EXPLAIN:** Phù hợp cho WebSocket, long-polling, streaming.
 
 ---
 
-### 3. IP Hash (2 phút)
+### 3. IP Hash (1 phút)
 
-**SAY:** "User đăng nhập ở Server 1, request tiếp theo đi Server 2 → Session mất! IP Hash giải quyết: cùng IP = cùng server."
+**SAY:** "IP Hash: cùng IP luôn đi cùng server → Session persistence."
 
 ```bash
-./switch-algorithm.sh ip-hash
-./simple-test.sh 9
+./switch-algorithm.sh ip-hash && ./simple-test.sh 6
 ```
 
-**EXPLAIN:**
-- Tất cả requests từ 1 IP → 1 server
-- Session persistence không cần Redis
-- **Interactive:** "Nếu gửi thêm 10 requests, sẽ đi server nào?" → Cùng server!
+**EXPLAIN:** Tất cả requests từ 1 IP → 1 server, không cần Redis.
 
 ---
 
-### 4. Health Check & Failover (3-4 phút) ⭐ **QUAN TRỌNG NHẤT**
+### 4. Health Check & Failover (3 phút) ⭐ **QUAN TRỌNG NHẤT**
 
-**SAY:** "Phần quan trọng nhất: servers có thể crash bất cứ lúc nào. Xem Nginx xử lý thế nào."
+**SAY:** "Quan trọng nhất: server crash → Nginx xử lý thế nào?"
 
 ```bash
 ./demo-health-check.sh
 ```
 
-**EXPLAIN theo steps:**
-1. **Normal:** Traffic phân phối bình thường
-2. **Stop Server 2:** (bấm Enter)
-   - "Tôi stop Server 2, giả lập crash..."
-   - **DRAMATIC PAUSE** 🎭
-   - "Không có request nào tới Server 2!"
-   - "Nginx tự động bypass, zero downtime!"
-3. **Restart:** (bấm Enter)
-   - "Restart Server 2..."
-   - "Nginx tự động add lại, automatic recovery!"
+**EXPLAIN ngắn gọn:**
+1. **Normal:** Traffic phân phối đều
+2. **Stop Server 2:** (Enter) → "Không request nào tới Server 2! Zero downtime!"
+3. **Restart:** (Enter) → "Nginx tự động add lại!"
 
-**KEY POINT:** "High Availability. AWS ELB, Google Load Balancer đều dùng health checks."
+**KEY POINT:** "High Availability như AWS ELB."
 
 ---
 
-### 5. Performance (1-2 phút)
+### 5. Performance (0.5-1 phút) - **OPTIONAL**
 
 ```bash
 cd Source && node load_test.js
 ```
 
-**EXPLAIN:**
-- Response time: ~10-15ms
-- Distribution: Gần như đều
-- Throughput tăng ~3 lần với 3 servers
+**EXPLAIN:** "Throughput tăng ~3 lần, response time ~10-15ms."
 
 ## 💡 Tips
 
@@ -116,9 +100,9 @@ cd Source && node load_test.js
 - "Request tiếp theo đi server nào?"
 - "Nếu tất cả servers down thì sao?"
 
-### Time Management
-- **Thiếu time:** Skip Weighted
-- **Thừa time:** Explain nginx configs
+### Time Management (7-10 phút)
+- **7 phút:** Round Robin (1.5) + Health Check (3) + Least Conn (1) + IP Hash (1) + wrap-up (0.5)
+- **10 phút:** Thêm Performance test (1)
 - **Must show:** Round Robin + Health Check
 
 ## 🎤 Key Talking Points

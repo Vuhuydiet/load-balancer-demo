@@ -10,14 +10,14 @@
 
 ```bash
 # 1. Khởi động services
-docker-compose up -d --build
+docker compose up -d --build
 
 # 2. Test thử
 curl http://localhost/
 
 # 3. Mở 2 terminals:
 # Terminal 1: Chạy demo commands
-# Terminal 2: docker-compose logs -f
+# Terminal 2: docker compose logs -f
 ```
 
 **Checklist:**
@@ -32,7 +32,7 @@ curl http://localhost/
 **SAY:** "Bây giờ demo thực tế. Tôi có 3 backend servers và 1 Nginx load balancer."
 
 ```bash
-docker-compose ps
+docker compose ps
 ./simple-test.sh 9
 ```
 
@@ -131,8 +131,8 @@ Load Test (20 req):   Avg 10-20ms, ~33% each
 | Issue | Quick Fix |
 |-------|-----------|
 | Port 80 in use | Use port 8080 |
-| Service won't start | `docker-compose logs` |
-| Wrong distribution | `docker-compose exec nginx nginx -s reload` |
+| Service won't start | `docker compose logs` |
+| Wrong distribution | `docker compose exec nginx nginx -s reload` |
 
 ---
 

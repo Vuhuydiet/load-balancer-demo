@@ -6,7 +6,7 @@ Demo 5 thuật toán load balancing cho seminar AWAD.
 
 ```bash
 # 1. Khởi động (đợi 30 giây)
-docker-compose up -d --build
+docker compose up -d --build
 
 # 2. Test
 ./simple-test.sh 9
@@ -52,20 +52,20 @@ cd Source && npm install && node load_test.js
 
 ```bash
 # Port 80 bị chiếm - dùng port 8080
-# Sửa docker-compose.yml: "8080:80"
+# Sửa docker compose.yml: "8080:80"
 
 # Services lỗi
-docker-compose down -v && docker-compose up -d --build
-docker-compose logs
+docker compose down -v && docker compose up -d --build
+docker compose logs
 
 # Reload config
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 ```
 
 ## 🧹 Cleanup
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## 📚 Chi Tiết

@@ -5,6 +5,9 @@
 
 NUM_REQUESTS=${1:-10}
 
+# Declare associative array to track server distribution
+declare -A server_count
+
 echo "╔════════════════════════════════════════╗"
 echo "║  Load Balancer Quick Test             ║"
 echo "╚════════════════════════════════════════╝"
@@ -17,6 +20,11 @@ do
     response=$(curl -s http://localhost/)
     server=$(echo $response | grep -o '"server":"[^"]*"' | cut -d'"' -f4)
     timestamp=$(date '+%H:%M:%S')
+
+    # Track server distribution
+    if [[ -n "$server" ]]; then
+        ((server_count["$server"]++))
+    fi
 
     # Color based on server
     if [[ $server == *"1"* ]]; then
@@ -37,13 +45,10 @@ echo "════════════════════════�
 echo "Test completed! ✅"
 echo ""
 
-# Show distribution
+# Show distribution from tracked data
 echo "Distribution:"
-for i in $(seq 1 $NUM_REQUESTS)
-do
-    curl -s http://localhost/ | grep -o '"server":"[^"]*"'
-done | sort | uniq -c | while read count server; do
-    server_clean=$(echo $server | cut -d'"' -f4)
-    percentage=$(echo "scale=1; $count * 100 / $NUM_REQUESTS" | bc)
-    echo "  $server_clean: $count requests ($percentage%)"
-done
+for server in "${!server_count[@]}"; do
+    count=${server_count[$server]}
+    percentage=$(( count * 100 / NUM_REQUESTS ))
+    echo "  $server: $count requests ($percentage%)"
+done | sort

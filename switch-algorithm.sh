@@ -46,24 +46,28 @@ echo "Description: $DESC"
 echo "Config: nginx/$CONFIG"
 echo ""
 
-# Copy config
-echo "📝 Copying configuration..."
-docker cp "nginx/$CONFIG" nginx-load-balancer:/etc/nginx/nginx.conf
+# Update docker-compose.yml to use the new config (only the active line, not commented lines)
+echo "📝 Updating docker-compose.yml..."
+sed -i "75s|nginx/nginx-[^:]*\.conf|nginx/$CONFIG|" docker-compose.yml
 
-# Test config
-echo "✅ Testing configuration..."
-docker-compose exec nginx nginx -t
+# Recreate nginx container with new volume mount
+echo "🔄 Recreating Nginx container..."
+docker compose up -d nginx
+
+# Wait for nginx to be healthy
+echo "⏳ Waiting for Nginx to be ready..."
+sleep 3
+
+# Verify nginx is running and config is correct
+echo "✅ Verifying configuration..."
+docker compose exec nginx nginx -t
+docker compose exec nginx cat /etc/nginx/nginx.conf | grep -A 5 "upstream backend"
 
 if [ $? -eq 0 ]; then
-    # Reload Nginx
-    echo "🔄 Reloading Nginx..."
-    docker-compose exec nginx nginx -s reload
-
     echo ""
     echo "✅ Successfully switched to: $NAME"
     echo ""
-    echo "Test with: curl http://localhost/"
-    echo "Or run: ./simple-test.sh 10"
+    echo "Test with: ./simple-test.sh 20"
 else
     echo ""
     echo "❌ Configuration test failed!"

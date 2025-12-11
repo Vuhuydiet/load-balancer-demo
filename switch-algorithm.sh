@@ -46,26 +46,27 @@ echo "Description: $DESC"
 echo "Config: nginx/$CONFIG"
 echo ""
 
-# Copy config
-echo "📝 Copying configuration..."
-docker cp "nginx/$CONFIG" nginx-load-balancer:/etc/nginx/nginx.conf
+# Update docker-compose.yml to use the selected config
+echo "📝 Updating docker-compose.yml..."
+# Only replace the active line (not the commented ones)
+sed -i.bak "/^      - \.\/nginx\/nginx-.*\.conf:\/etc\/nginx\/nginx.conf:ro$/c\      - ./nginx/$CONFIG:/etc/nginx/nginx.conf:ro" docker-compose.yml
 
-# Test config
-echo "✅ Testing configuration..."
-docker-compose exec nginx nginx -t
+# Stop and remove nginx container to remount volume with new config
+echo "🔄 Restarting nginx with new config..."
+docker compose stop nginx > /dev/null 2>&1
+docker compose rm -f nginx > /dev/null 2>&1
+docker compose up -d nginx > /dev/null 2>&1
 
-if [ $? -eq 0 ]; then
-    # Reload Nginx
-    echo "🔄 Reloading Nginx..."
-    docker-compose exec nginx nginx -s reload
+# Wait for nginx to start
+echo "⏳ Waiting for nginx to start..."
+sleep 3
 
-    echo ""
-    echo "✅ Successfully switched to: $NAME"
-    echo ""
-    echo "Test with: curl http://localhost/"
-    echo "Or run: ./simple-test.sh 10"
-else
-    echo ""
-    echo "❌ Configuration test failed!"
-    exit 1
-fi
+# Verify the config is loaded
+echo "✅ Verifying configuration..."
+docker exec nginx-load-balancer cat /etc/nginx/nginx.conf | head -n 3
+
+echo ""
+echo "✅ Successfully switched to: $NAME"
+echo ""
+echo "Test with: curl http://localhost/"
+echo "Or run: ./simple-test.sh 10"

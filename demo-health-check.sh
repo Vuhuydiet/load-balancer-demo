@@ -27,19 +27,20 @@ for i in {1..6}; do
 done
 
 echo ""
-echo "Press Enter to stop Server 2..."
+echo "Press Enter to make Server 2 unhealthy..."
 read
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 2: Stopping Server 2..."
+echo "Step 2: Making Server 2 fail health checks..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-docker-compose stop server2
-echo "⛔ Server 2 is now DOWN"
-sleep 2
+curl -s -X POST http://localhost:3002/admin/fail > /dev/null
+echo "⛔ Server 2 health check is now FAILING"
+echo "⏳ Waiting for Nginx to detect unhealthy status..."
+sleep 35
 
 echo ""
-echo "Sending requests (Server 2 is down):"
+echo "Sending requests (Server 2 is unhealthy):"
 echo ""
 
 for i in {1..9}; do
@@ -57,17 +58,17 @@ done
 echo ""
 echo "Notice: No requests went to Server 2! 🎉"
 echo ""
-echo "Press Enter to restart Server 2..."
+echo "Press Enter to recover Server 2..."
 read
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 3: Restarting Server 2..."
+echo "Step 3: Recovering Server 2..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-docker-compose start server2
-echo "✅ Server 2 is starting..."
-echo "⏳ Waiting for health check to pass..."
-sleep 4
+curl -s -X POST http://localhost:3002/admin/recover > /dev/null
+echo "✅ Server 2 health status restored to HEALTHY"
+echo "⏳ Waiting for Nginx to detect healthy status..."
+sleep 35
 
 echo ""
 echo "Sending requests (Server 2 recovered):"

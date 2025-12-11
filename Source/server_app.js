@@ -14,6 +14,9 @@ const SERVER_COLOR = process.env.SERVER_COLOR || 'blue';
 // Counter for tracking requests
 let requestCount = 0;
 
+// Health status flag (can be controlled to simulate failures)
+let isHealthy = true;
+
 // Middleware to log requests
 app.use((req, res, next) => {
   requestCount++;
@@ -39,11 +42,40 @@ app.get('/', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  if (!isHealthy) {
+    console.log(`❌ Health check FAILED - Server ${SERVER_ID} is marked as unhealthy`);
+    return res.status(503).json({
+      status: 'unhealthy',
+      server: `Server ${SERVER_ID}`,
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    });
+  }
+
   res.status(200).json({
     status: 'healthy',
     server: `Server ${SERVER_ID}`,
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
+  });
+});
+
+// Endpoint to control health status (for testing)
+app.post('/admin/fail', (req, res) => {
+  isHealthy = false;
+  console.log(`⚠️  Server ${SERVER_ID} health status set to UNHEALTHY`);
+  res.json({
+    message: `Server ${SERVER_ID} will now fail health checks`,
+    isHealthy: false
+  });
+});
+
+app.post('/admin/recover', (req, res) => {
+  isHealthy = true;
+  console.log(`✅ Server ${SERVER_ID} health status set to HEALTHY`);
+  res.json({
+    message: `Server ${SERVER_ID} will now pass health checks`,
+    isHealthy: true
   });
 });
 

@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   # Backend Server 1
@@ -18,7 +17,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 10s
 
@@ -39,7 +38,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 10s
 
@@ -60,7 +59,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 10s
 
@@ -72,7 +71,7 @@ services:
       - "80:80"
     volumes:
       # Mount nginx configuration (change this to test different algorithms)
-      - ./nginx/nginx-round-robin.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx-health-check.conf:/etc/nginx/nginx.conf:ro
       # Uncomment one of these to test different algorithms:
       # - ./nginx/nginx-least-conn.conf:/etc/nginx/nginx.conf:ro
       # - ./nginx/nginx-ip-hash.conf:/etc/nginx/nginx.conf:ro
@@ -87,7 +86,7 @@ services:
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 3
 
 networks:

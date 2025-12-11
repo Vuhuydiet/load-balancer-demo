@@ -34,7 +34,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Step 2: Stopping Server 2..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-docker-compose stop server2
+docker compose stop server2
 echo "⛔ Server 2 is now DOWN"
 sleep 2
 
@@ -64,7 +64,7 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Step 3: Restarting Server 2..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-docker-compose start server2
+docker compose start server2
 echo "✅ Server 2 is starting..."
 echo "⏳ Waiting for health check to pass..."
 sleep 4

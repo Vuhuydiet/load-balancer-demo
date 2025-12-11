@@ -71,7 +71,7 @@ services:
       - "80:80"
     volumes:
       # Mount nginx configuration (change this to test different algorithms)
-      - ./nginx/nginx-round-robin.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx-health-check.conf:/etc/nginx/nginx.conf:ro
       # Uncomment one of these to test different algorithms:
       # - ./nginx/nginx-least-conn.conf:/etc/nginx/nginx.conf:ro
       # - ./nginx/nginx-ip-hash.conf:/etc/nginx/nginx.conf:ro

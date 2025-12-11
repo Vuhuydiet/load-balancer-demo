@@ -46,27 +46,30 @@ echo "Description: $DESC"
 echo "Config: nginx/$CONFIG"
 echo ""
 
-# Update docker-compose.yml to use the selected config
+# Update docker-compose.yml to use the new config (only the active line, not commented lines)
 echo "📝 Updating docker-compose.yml..."
-# Only replace the active line (not the commented ones)
-sed -i.bak "/^      - \.\/nginx\/nginx-.*\.conf:\/etc\/nginx\/nginx.conf:ro$/c\      - ./nginx/$CONFIG:/etc/nginx/nginx.conf:ro" docker-compose.yml
+sed -i "75s|nginx/nginx-[^:]*\.conf|nginx/$CONFIG|" docker-compose.yml
 
-# Stop and remove nginx container to remount volume with new config
-echo "🔄 Restarting nginx with new config..."
-docker compose stop nginx > /dev/null 2>&1
-docker compose rm -f nginx > /dev/null 2>&1
-docker compose up -d nginx > /dev/null 2>&1
+# Recreate nginx container with new volume mount
+echo "🔄 Recreating Nginx container..."
+docker compose up -d nginx
 
-# Wait for nginx to start
-echo "⏳ Waiting for nginx to start..."
+# Wait for nginx to be healthy
+echo "⏳ Waiting for Nginx to be ready..."
 sleep 3
 
-# Verify the config is loaded
+# Verify nginx is running and config is correct
 echo "✅ Verifying configuration..."
-docker exec nginx-load-balancer cat /etc/nginx/nginx.conf | head -n 3
+docker compose exec nginx nginx -t
+docker compose exec nginx cat /etc/nginx/nginx.conf | grep -A 5 "upstream backend"
 
-echo ""
-echo "✅ Successfully switched to: $NAME"
-echo ""
-echo "Test with: curl http://localhost/"
-echo "Or run: ./simple-test.sh 10"
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "✅ Successfully switched to: $NAME"
+    echo ""
+    echo "Test with: ./simple-test.sh 20"
+else
+    echo ""
+    echo "❌ Configuration test failed!"
+    exit 1
+fi
